@@ -45,6 +45,12 @@ export interface Props {
    * In case the recording is cancelled, the blob is discarded.
    **/
   onRecordingComplete?: (blob: Blob) => void;
+
+  /**
+   * This gets called when we send our recording
+   **/
+  onSubmit?: (blob: Blob) => void; // Added onSubmit callback
+
   /**
    * This gets called when the getUserMedia Promise is rejected.
    * It takes the resultant DOMException as its parameter.

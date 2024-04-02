@@ -4,7 +4,6 @@ import useAudioRecorder from "../hooks/useAudioRecorder";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone, faPause, faPlay, faStop, faTrash, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import "../styles/audio-recorder.css";
-
 const LiveAudioVisualizer = React.lazy(async () => {
   const { LiveAudioVisualizer } = await import("react-audio-visualize");
   return { default: LiveAudioVisualizer };
@@ -26,9 +25,9 @@ const AudioRecorder = ({
     stopRecording();
   };
 
-  const handleStopAndSubmit = () => {
+  const handleStopAndSubmit = async () => {
     if(isRecording) {
-      stopRecording();
+      await stopRecording();
     }
     if(recordingBlob && onSubmit) {
       onSubmit(recordingBlob);
@@ -41,13 +40,14 @@ const AudioRecorder = ({
     }
   }, [isRecording]);
 
+
   return (
     <div className={`audio-recorder ${isRecording ? "recording" : ""} ${classes?.AudioRecorderClass ?? ""}`}>
       {!isRecording && (
         <FontAwesomeIcon
           icon={faMicrophone}
           onClick={startRecording}
-          color={iconColors.start}
+          color={iconColors?.start}
           size="2x"
           className="cursor-pointer"
         />
@@ -57,7 +57,7 @@ const AudioRecorder = ({
           <FontAwesomeIcon
             icon={isPaused ? faPlay : faPause}
             onClick={togglePauseResume}
-            color={isPaused ? iconColors.resume : iconColors.pause}
+            color={isPaused ? iconColors?.resume : iconColors?.pause}
             size="2x"
             className="cursor-pointer"
           />
@@ -81,7 +81,7 @@ const AudioRecorder = ({
           <FontAwesomeIcon
             icon={faPaperPlane}
             onClick={handleStopAndSubmit}
-            color={iconColors.save}
+            color={iconColors?.save}
             size="2x"
             className="cursor-pointer audio-recorder-submit"
           />
@@ -93,3 +93,4 @@ const AudioRecorder = ({
     </div>
   );
 };
+export default AudioRecorder;
