@@ -1,5 +1,5 @@
 {
-  "name": "react-audio-voice-recorder",
+  "name": "react-audio-voice-recorder-vocial",
   "private": false,
   "version": "2.2.0",
   "type": "module",
@@ -7,7 +7,7 @@
   "author": "Samhir Tarif",
   "repository": {
     "type": "git",
-    "url": "https://github.com/samhirtarif/react-audio-recorder.git"
+    "url": "https://github.com/t3mr0i/react-audio-recorder-vocial.git"
   },
   "keywords": [
     "react",
