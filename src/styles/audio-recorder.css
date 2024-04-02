@@ -1,18 +1,24 @@
 .audio-recorder {
-    background-color: rgb(235, 235, 235);
-    /* border: 1px solid gray; */
-    box-shadow: 0px 2px 5px 0px rgb(190, 190, 190);
-    border-radius: 20px;
-    box-sizing: border-box;
-    color: #000000;
-
-    width: 40px;
     display: flex;
     align-items: center;
-
-    transition: all 0.2s ease-in;
-    -webkit-tap-highlight-color: transparent;
-}
+    justify-content: center;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 10px; /* Adjust space between elements */
+  }
+  
+  .audio-recorder-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; /* Ensure controls span the full width */
+    padding: 10px; /* Adjust padding as needed */
+  }
+  
+  .audio-recorder-submit {
+    margin-left: auto; /* Push the paper plane to the right */
+  }
+  
+  
 
 .audio-recorder-mic {
     box-sizing: content-box;
@@ -38,7 +44,10 @@
     font-weight: 400;
     line-height: 1;
 }
-
+.audio-recorder-icon {
+    margin: 0 8px; /* Adjusted margin for spacing between icons */
+    cursor: pointer;
+  }
 .audio-recorder-status {
     margin-left: 15px;
     display: flex;
@@ -91,3 +100,9 @@
     50%  {opacity: 0;}
     100% {opacity: 1;}
 }
+
+.audio-recorder-timer, .audio-recorder-status {
+    margin: 0 8px;
+    color: #333; /* Darker color for better readability */
+    font-size: 14px;
+  }
