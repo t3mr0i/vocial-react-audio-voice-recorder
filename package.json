@@ -1,10 +1,10 @@
 {
   "name": "react-audio-voice-recorder",
   "private": false,
-  "version": "2.3.0",
+  "version": "2.3.1",
   "type": "module",
   "license": "MIT",
-  "author": "Samhir Tarif",
+  "author": "Kai Detmers",
   "repository": {
     "type": "git",
     "url": "https://github.com/t3mr0i/react-audio-recorder-vocial.git"

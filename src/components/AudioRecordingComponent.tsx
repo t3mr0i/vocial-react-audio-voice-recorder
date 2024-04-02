@@ -26,11 +26,21 @@ const AudioRecorder = ({
   };
 
   const handleStopAndSubmit = async () => {
+    console.log("Before stopping, isRecording:", isRecording); // Debug
+  
     if(isRecording) {
       await stopRecording();
+      console.log("Stopped recording, isRecording:", isRecording); // Debug
+    } else {
+      console.log("Not recording when submit was attempted.");
     }
+  
+    console.log("Recording blob available:", !!recordingBlob); // Debug
     if(recordingBlob && onSubmit) {
+      console.log("Submitting recording.");
       onSubmit(recordingBlob);
+    } else {
+      console.log("No recording blob to submit.");
     }
   };
 
