@@ -2,12 +2,9 @@ import React, { useState, useEffect, ReactElement, Suspense } from "react";
 import { Props } from "./interfaces";
 import useAudioRecorder from "../hooks/useAudioRecorder";
 
-import micSVG from "../icons/mic.svg";
-import pauseSVG from "../icons/pause.svg";
-import resumeSVG from "../icons/play.svg";
-import saveSVG from "../icons/save.svg";
-import discardSVG from "../icons/stop.svg";
 import "../styles/audio-recorder.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophone, faPaperPlane, faPause, faPlay, faSave, faStop, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const LiveAudioVisualizer = React.lazy(async () => {
   const { LiveAudioVisualizer } = await import("react-audio-visualize");
@@ -27,6 +24,8 @@ const LiveAudioVisualizer = React.lazy(async () => {
  * @prop `downloadFileExtension` File extension for the audio filed that gets downloaded. Defaults to `mp3`. Allowed values are `mp3`, `wav` and `webm`
  * @prop `showVisualizer` Displays a waveform visualization for the audio when set to `true`. Defaults to `false`
  * @prop `classes` Is an object with attributes representing classes for different parts of the component
+ * @prop `iconColors` Is an object with attributes for the colors of different parts of the component
+
  */
 const AudioRecorder: (props: Props) => ReactElement = ({
   onRecordingComplete,
@@ -36,6 +35,7 @@ const AudioRecorder: (props: Props) => ReactElement = ({
   downloadOnSavePress = false,
   downloadFileExtension = "webm",
   showVisualizer = false,
+  iconColors = { start: "#000", stop: "#000", pause: "#000", resume: "#000", save: "#000", discard: "#000" },
   mediaRecorderOptions,
   classes,
 }: Props) => {
@@ -48,16 +48,10 @@ const AudioRecorder: (props: Props) => ReactElement = ({
     isPaused,
     recordingTime,
     mediaRecorder,
-  } =
-    recorderControls ??
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useAudioRecorder(
-      audioTrackConstraints,
-      onNotAllowedOrFound,
-      mediaRecorderOptions
-    );
+  } = recorderControls ?? useAudioRecorder(audioTrackConstraints, onNotAllowedOrFound, mediaRecorderOptions);
 
   const [shouldSave, setShouldSave] = useState(false);
+  const [shouldDiscard, setShouldDiscard] = useState(false);
 
   const stopAudioRecorder: (save?: boolean) => void = (
     save: boolean = true
@@ -113,6 +107,22 @@ const AudioRecorder: (props: Props) => ReactElement = ({
     a.click();
     a.remove();
   };
+  const handleDiscard = () => {
+    setShouldDiscard(true);
+    stopRecording();
+  };
+
+  useEffect(() => {
+    if (!isRecording && recordingBlob && !shouldDiscard && onRecordingComplete) {
+      onRecordingComplete(recordingBlob);
+      if (downloadOnSavePress) {
+        // Logic to handle downloading of the blob
+      }
+    }
+    if (!isRecording) {
+      setShouldDiscard(false); // Reset discard flag when not recording
+    }
+  }, [isRecording, recordingBlob, shouldDiscard, onRecordingComplete, downloadOnSavePress]);
 
   useEffect(() => {
     if (
@@ -128,82 +138,75 @@ const AudioRecorder: (props: Props) => ReactElement = ({
   }, [recordingBlob]);
 
   return (
-    <div
-      className={`audio-recorder ${isRecording ? "recording" : ""} ${
-        classes?.AudioRecorderClass ?? ""
-      }`}
-      data-testid="audio_recorder"
-    >
-      <img
-        src={isRecording ? saveSVG : micSVG}
-        className={`audio-recorder-mic ${
-          classes?.AudioRecorderStartSaveClass ?? ""
-        }`}
-        onClick={isRecording ? () => stopAudioRecorder() : startRecording}
-        data-testid="ar_mic"
-        title={isRecording ? "Save recording" : "Start recording"}
-      />
-      <span
-        className={`audio-recorder-timer ${
-          !isRecording ? "display-none" : ""
-        } ${classes?.AudioRecorderTimerClass ?? ""}`}
-        data-testid="ar_timer"
-      >
-        {Math.floor(recordingTime / 60)}:
-        {String(recordingTime % 60).padStart(2, "0")}
-      </span>
-      {showVisualizer ? (
-        <span
-          className={`audio-recorder-visualizer ${
-            !isRecording ? "display-none" : ""
-          }`}
-        >
-          {mediaRecorder && (
-            <Suspense fallback={<></>}>
-              <LiveAudioVisualizer
-                mediaRecorder={mediaRecorder}
-                barWidth={2}
-                gap={2}
-                width={140}
-                height={30}
-                fftSize={512}
-                maxDecibels={-10}
-                minDecibels={-80}
-                smoothingTimeConstant={0.4}
-              />
-            </Suspense>
-          )}
-        </span>
+    <div className={`audio-recorder ${isRecording ? "recording" : ""} ${classes?.AudioRecorderClass ?? ""}`}>
+      {!isRecording ? (
+        <FontAwesomeIcon
+          icon={faMicrophone}
+          onClick={startRecording}
+          color={iconColors.start}
+          size="2x"
+          className="cursor-pointer"
+        />
       ) : (
-        <span
-          className={`audio-recorder-status ${
-            !isRecording ? "display-none" : ""
-          } ${classes?.AudioRecorderStatusClass ?? ""}`}
-        >
-          <span className="audio-recorder-status-dot"></span>
-          Recording
-        </span>
+        <>
+          <FontAwesomeIcon
+            icon={faStop}
+            onClick={() => stopRecording()}
+            color={iconColors.stop}
+            size="2x"
+            className="cursor-pointer"
+          />
+          <FontAwesomeIcon
+            icon={isPaused ? faPlay : faPause}
+            onClick={togglePauseResume}
+            color={isPaused ? iconColors.resume : iconColors.pause}
+            size="2x"
+            className="cursor-pointer"
+          />
+        <FontAwesomeIcon
+        icon={faTrash}
+        onClick={handleDiscard}
+        color={iconColors.discard}
+        size="2x"
+        className="cursor-pointer"
+      />
+        </>
       )}
-      <img
-        src={isPaused ? resumeSVG : pauseSVG}
-        className={`audio-recorder-options ${
-          !isRecording ? "display-none" : ""
-        } ${classes?.AudioRecorderPauseResumeClass ?? ""}`}
-        onClick={togglePauseResume}
-        title={isPaused ? "Resume recording" : "Pause recording"}
-        data-testid="ar_pause"
-      />
-      <img
-        src={discardSVG}
-        className={`audio-recorder-options ${
-          !isRecording ? "display-none" : ""
-        } ${classes?.AudioRecorderDiscardClass ?? ""}`}
-        onClick={() => stopAudioRecorder(false)}
-        title="Discard Recording"
-        data-testid="ar_cancel"
-      />
+      {recordingBlob && !isRecording && (
+        <FontAwesomeIcon
+          icon={faPaperPlane}
+          onClick={() => {
+            if (onRecordingComplete) onRecordingComplete(recordingBlob);
+          }}
+          color={iconColors.save}
+          size="2x"
+          className="cursor-pointer"
+        />
+      )}
+      <span className={`audio-recorder-timer ${!isRecording ? "display-none" : ""}`}>
+        {Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, "0")}
+      </span>
+      {showVisualizer && mediaRecorder && (
+        <Suspense fallback={<div>Loading visualizer...</div>}>
+          <LiveAudioVisualizer
+            mediaRecorder={mediaRecorder}
+            barWidth={2}
+            gap={2}
+            width={140}
+            height={30}
+            fftSize={512}
+            maxDecibels={-10}
+            minDecibels={-80}
+            smoothingTimeConstant={0.4}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };
 
 export default AudioRecorder;
+
+function setShouldDiscard(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}

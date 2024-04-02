@@ -30,6 +30,15 @@ interface StyleProps {
   AudioRecorderDiscardClass?: string;
 }
 
+interface IconColors {
+  start?: string;
+  stop?: string;
+  pause?: string;
+  resume?: string;
+  save?: string;
+  discard?: string;
+}
+
 export interface Props {
   /**
    * This gets called when the save button is clicked.
@@ -81,4 +90,9 @@ export interface Props {
    * Custom classes to changes styles.
    **/
   classes?: StyleProps;
+  /**
+   * Custom classes to change color of the icons.
+   **/
+  iconColors?: IconColors;
+
 }
